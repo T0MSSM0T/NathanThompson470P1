@@ -14,7 +14,7 @@
 */
 void add_action(long act) {
 	node_t * newNode = malloc(sizeof(node_t));
-	printf("%ld\n",act);
+	printf("Action: %ld\n",act);
 	
 	if (first == NULL) {
 		newNode->action = act;
