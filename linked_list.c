@@ -14,15 +14,14 @@
 */
 void add_action(long act) {
 	node_t * newNode = malloc(sizeof(node_t));
-	printf("Action: %ld\n",act);
+	//printf("Action: %ld\n",act);
+
+    newNode->action = act;
+    newNode->next = NULL;
 	
 	if (first == NULL) {
-		newNode->action = act;
-		newNode->next = NULL;
 		first = newNode;
 	} else {
-		newNode->action = act;
-		newNode->next = NULL;
 		last->next = newNode;
 	}
 	
@@ -36,18 +35,18 @@ void add_action(long act) {
 long pull_action() {
 	node_t * temp;
 	temp = first;
-	long action = 0;
+	long action = -1;
 
 	if(first != NULL) {
 		if (temp->next != NULL) {
 			first = temp->next;
 		} else {
 			first = NULL;
-			free(temp);
+            printf("first just became null");
 		}
 		action = temp->action;
 	}
-	
+
 	return action;	
 }
 

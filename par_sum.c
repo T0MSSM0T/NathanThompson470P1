@@ -34,7 +34,7 @@ pthread_mutex_t cond_mut;
 //conditions
 pthread_cond_t empty_cond;
 
-bool done = false;
+volatile bool done = false;
 
 // function prototypes
 void update(long number);
@@ -53,54 +53,56 @@ void update(long number)
     sum += number;
     pthread_mutex_unlock(&sum_mut);
     if (number % 2 == 1) {
-    	pthread_mutex_lock(&odd_mut);
+        pthread_mutex_lock(&odd_mut);
         odd++;
         pthread_mutex_unlock(&odd_mut);
     }
+
+    pthread_mutex_lock(&min_mut);
     if (number < min) {
-    	pthread_mutex_lock(&min_mut);
+        
         min = number;
-        pthread_mutex_unlock(&min_mut);
     }
+    pthread_mutex_unlock(&min_mut);
+
+    pthread_mutex_lock(&max_mut);
     if (number > max) {
-    	pthread_mutex_lock(&max_mut);
         max = number;
-        pthread_mutex_unlock(&max_mut);
     }
+    pthread_mutex_unlock(&max_mut);
 }
 
 void* process(void* para)
 {
-    while(!done)
+//    printf("in the threads");
+    while(!done && is_empty() == 0)
     {
-    	/*
-        while(!done)//linked list is empty do nothing
-        {     //C:"!done"
-            //get mutex then grab from linked list......this may be done in the while loop need to understand how the stuff works
-            //i believe it is done seperatly but maybe they are able to be done together
-        }
-        */
+        
         pthread_mutex_lock(&cond_mut);
-        if(is_empty()) {
-        	while(pthread_cond_wait(&empty_cond, &cond_mut) != 0);
-        }
-        pthread_mutex_unlock(&cond_mut);
+        //if(is_empty()) {
+        while(pthread_cond_wait(&empty_cond, &cond_mut) != 0);
+        //}
+        //pthread_mutex_unlock(&cond_mut);
 
         //perfect protects list
         pthread_mutex_lock(&list_mut);
         long action = pull_action();
+        printf("pulle: %ld\n", action);
         pthread_mutex_unlock(&list_mut);
+        if (action != -1)
+        {
+            update(action);//sleep for linked list object amount of time
+        }
         //*****
-
-        update(action);//sleep for linked list object amount of time
-
+        bool empty = is_empty();
+        printf("empty: %d\n", empty);
     }
     pthread_exit(NULL);//or however you cleanup
 }
 
 int main(int argc, char* argv[])
 {
-	
+    
     // check and parse command line options
     if (argc != 3) {
         printf("Usage: par_sum <infile> <thread_number>\n");
@@ -140,6 +142,7 @@ int main(int argc, char* argv[])
     while (fscanf(fin, "%c %ld\n", &action, &num) == 2) {
         if (action == 'p') {            // process
             add_action(num);
+            printf("added: %ld\n", num);
             pthread_cond_signal(&empty_cond);//add to linked list
         } else if (action == 'w') {     // wait
             sleep(num);
@@ -151,10 +154,14 @@ int main(int argc, char* argv[])
 
     done = true;
 
+    pthread_cond_broadcast(&empty_cond);
+//    printf("done");
+
     // wait for thread to finish
     for(i = 0; i < thread_count; i++)
     {
         pthread_join(thread_handle[i], NULL);//&(hits[i]));
+  //      printf("thread: %d\n",i);
     }
 
     fclose(fin);
