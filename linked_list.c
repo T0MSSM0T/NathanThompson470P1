@@ -12,9 +12,9 @@
 * Adds an action to the back of the list.
 * 
 */
-void add_action(char* act) {
+void add_action(long act) {
 	node_t * newNode = malloc(sizeof(node_t));
-	printf("%s\n",act);
+	printf("%ld\n",act);
 	
 	if (first == NULL) {
 		newNode->action = act;
@@ -33,10 +33,10 @@ void add_action(char* act) {
 * Pulls a node from the front of the 
 *
 */
-char * pull_action() {
+long pull_action() {
 	node_t * temp;
 	temp = first;
-	char * action = "No action";
+	long action = 0;
 
 	if(first != NULL) {
 		if (temp->next != NULL) {
@@ -69,7 +69,7 @@ void print_list() {
 	current = first;
 	
 	while (current != NULL) {
-		printf("Action: %s\n", current->action);
+		printf("Action: %ld\n", current->action);
 		current = current->next;
 	}
 }
@@ -94,10 +94,10 @@ void destroy() {
 ****
 int main (int argc, char ** argv) {
 	print_list();
-	add_action("w5");
-	add_action("p4");
+	add_action(5);
+	add_action(6);
 	print_list();
-	printf("pulled_action: %s\n",pull_action());
+	printf("pulled_action: %ld\n",pull_action());
 	print_list();
 	
 	destroy();

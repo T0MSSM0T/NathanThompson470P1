@@ -13,14 +13,14 @@
 
 typedef struct __attribute__((__packed__)) node {
 	struct node * next;
-	char * action;
+	long action;
 }node_t;
 
 node_t * first;
 node_t * last;
 
-void add_action(char* act);
-char * pull_action();
+void add_action(long act);
+long pull_action();
 bool is_empty();
 void print_list();
 void destroy();
