@@ -42,12 +42,10 @@ long pull_action() {
 			first = temp->next;
 		} else {
 			first = NULL;
-            printf("first just became null");
 		}
 		action = temp->action;
 	}
-
-	return action;	
+	return action;
 }
 
 /*

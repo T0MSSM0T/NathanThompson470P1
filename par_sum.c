@@ -45,10 +45,9 @@ void update(long number);
 void update(long number)
 {
     // simulate computation
-    sleep(number);
+    //sleep(number);
 
     // update aggregate variables
-    printf("Updating\n");
     pthread_mutex_lock(&sum_mut);
     sum += number;
     pthread_mutex_unlock(&sum_mut);
@@ -74,28 +73,23 @@ void update(long number)
 
 void* process(void* para)
 {
-//    printf("in the threads");
-    while(!done && is_empty() == 0)
+    while(!done)
     {
-        
         pthread_mutex_lock(&cond_mut);
-        //if(is_empty()) {
-        while(pthread_cond_wait(&empty_cond, &cond_mut) != 0);
-        //}
-        //pthread_mutex_unlock(&cond_mut);
+        while(is_empty() && !done) {
+            while(pthread_cond_wait(&empty_cond, &cond_mut) != 0);
+        }
+        pthread_mutex_unlock(&cond_mut);
 
-        //perfect protects list
+        //protects list
         pthread_mutex_lock(&list_mut);
         long action = pull_action();
-        printf("pulle: %ld\n", action);
         pthread_mutex_unlock(&list_mut);
+
         if (action != -1)
         {
-            update(action);//sleep for linked list object amount of time
+            update(action);
         }
-        //*****
-        bool empty = is_empty();
-        printf("empty: %d\n", empty);
     }
     pthread_exit(NULL);//or however you cleanup
 }
@@ -142,7 +136,6 @@ int main(int argc, char* argv[])
     while (fscanf(fin, "%c %ld\n", &action, &num) == 2) {
         if (action == 'p') {            // process
             add_action(num);
-            printf("added: %ld\n", num);
             pthread_cond_signal(&empty_cond);//add to linked list
         } else if (action == 'w') {     // wait
             sleep(num);
@@ -152,10 +145,13 @@ int main(int argc, char* argv[])
         }
     }
 
+    while(!is_empty())
+    {
+        sleep(.1);//busy waiting
+    }
     done = true;
 
     pthread_cond_broadcast(&empty_cond);
-//    printf("done");
 
     // wait for thread to finish
     for(i = 0; i < thread_count; i++)
