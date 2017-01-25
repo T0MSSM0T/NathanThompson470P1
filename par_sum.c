@@ -49,7 +49,7 @@ void update(long number)
 
 void* process(void* para)
 {
-    int list_obj = 0;//linked list type object or struct or whatever
+    long list_obj = 0;//linked list type object or struct or whatever
                 //C:" = 0"
     while(!done)
     {
@@ -58,7 +58,7 @@ void* process(void* para)
             //get mutex then grab from linked list......this may be done in the while loop need to understand how the stuff works
             //i believe it is done seperatly but maybe they are able to be done together
         }
-        sleep(list_obj);//sleep for linked list object amount of time
+        update(list_obj);//sleep for linked list object amount of time
     }
     pthread_exit(NULL);//or however you cleanup
     return NULL;//remove if not needed
@@ -104,21 +104,21 @@ int main(int argc, char* argv[])
         }
     }
 
-    // start timer
-    gettimeofday(&tv, NULL);
-    start = tv.tv_sec+(tv.tv_usec/1000000.0);
-
     // wait for thread to finish
     for(i = 0; i < thread_count; i++)
     {
         pthread_join(thread_handle[i], NULL);//&(hits[i]));
     }
 
+    fclose(fin);
+
+    // start timer
+    gettimeofday(&tv, NULL);
+    start = tv.tv_sec+(tv.tv_usec/1000000.0);
+
     // stop timer
     gettimeofday(&tv, NULL);
     end = tv.tv_sec+(tv.tv_usec/1000000.0);
-
-    fclose(fin);
 
     // print results
     printf("%ld %ld %ld %ld\n", sum, odd, min, max);
