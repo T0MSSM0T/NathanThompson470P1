@@ -75,12 +75,15 @@ void* process(void* para) {
         while(is_empty() && !done) {
             while(pthread_cond_wait(&empty_cond, &cond_mut) != 0);
         }
+	long action = pull_action();
         pthread_mutex_unlock(&cond_mut);
 
         //protects list access
-        pthread_mutex_lock(&list_mut);
-        long action = pull_action(); //protection for pulling from the list
-        pthread_mutex_unlock(&list_mut);
+//i moved the action setting in the other mutex.... before there could have been  multiple threads  getting through even though they shouldnt, now getting through has to deal with actually grabbing an action at the same time
+//we doont need the list mut anymore unless you dont want to make this change
+//        pthread_mutex_lock(&list_mut);
+//        long action = pull_action(); //protection for pulling from the list
+//        pthread_mutex_unlock(&list_mut);
 
         if (action != -1) { //action -1 is default for empty list
             update(action);
