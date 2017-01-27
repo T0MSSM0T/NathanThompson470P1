@@ -10,42 +10,40 @@
 
 /*
 * Adds an action to the back of the list.
-* 
+*
 */
 void add_action(long act) {
-	node_t * newNode = malloc(sizeof(node_t));
-	//printf("Action: %ld\n",act);
+        node_t * newNode = malloc(sizeof(node_t));
+        newNode->action = act;
+        newNode->next = NULL;
 
-    newNode->action = act;
-    newNode->next = NULL;
-	
-	if (first == NULL) {
-		first = newNode;
-	} else {
-		last->next = newNode;
-	}
-	
-	last = newNode;
+        if (first == NULL) {
+                first = newNode;
+        } else {
+                last->next = newNode;
+        }
+        last = newNode;
 }
 
 /*
-* Pulls a node from the front of the 
+* Pulls a node from the front of the list
 *
 */
 long pull_action() {
-	node_t * temp;
-	temp = first;
-	long action = -1;
+        node_t * temp;
+        temp = first;
+        long action = -1;
 
-	if(first != NULL) {
-		if (temp->next != NULL) {
-			first = temp->next;
-		} else {
-			first = NULL;
-		}
-		action = temp->action;
-	}
-	return action;
+        if(first != NULL) {
+                if (temp->next != NULL) {
+                        first = temp->next;
+                } else {
+                        first = NULL;
+                }
+                action = temp->action;
+                free(temp);
+        }
+        return action;
 }
 
 /*
@@ -53,7 +51,7 @@ long pull_action() {
 *
 */
 bool is_empty() {
-	return first == NULL;
+        return first == NULL;
 }
 
 /*
@@ -61,14 +59,13 @@ bool is_empty() {
 *
 */
 void print_list() {
-	node_t * current;
-	
-	current = first;
-	
-	while (current != NULL) {
-		printf("Action: %ld\n", current->action);
-		current = current->next;
-	}
+        node_t * current;
+        current = first;
+
+        while (current != NULL) {
+                printf("Action: %ld\n", current->action);
+                current = current->next;
+        }
 }
 
 /*
@@ -76,30 +73,29 @@ void print_list() {
 *
 */
 void destroy() {
-	node_t * temp;
-	
-	while(first != NULL) {
-		temp = first;
-		first = first->next;
-		free(temp);
-	}
-	last = NULL;
+        node_t * temp;
+
+        while(first != NULL) {
+                temp = first;
+                first = first->next;
+                free(temp);
+        }
+        last = NULL;
 }
 
 /***
 * for testing purposes
 ****
 int main (int argc, char ** argv) {
-	print_list();
-	add_action(5);
-	add_action(6);
-	print_list();
-	printf("pulled_action: %ld\n",pull_action());
-	print_list();
-	
-	destroy();
-	return 0;
+        print_list();
+        add_action(5);
+        add_action(6);
+        print_list();
+        printf("pulled_action: %ld\n",pull_action());
+        print_list();
+
+        destroy();
+        return 0;
 }
 */
-
 

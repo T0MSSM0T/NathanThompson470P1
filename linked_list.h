@@ -12,12 +12,12 @@
 */
 
 typedef struct __attribute__((__packed__)) node {
-	struct node * next;
-	long action;
+        struct node * next; //next node in list
+        long action; //number associated with node
 }node_t;
 
-node_t * first;
-node_t * last;
+node_t * first; //first node in list
+node_t * last; //last node in list
 
 void add_action(long act);
 long pull_action();
